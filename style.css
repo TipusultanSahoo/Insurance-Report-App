@@ -1,0 +1,83 @@
+body {
+
+    background-color: #f4f6f9;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.main-card {
+
+    margin-top: 40px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 15px rgba(0,0,0,0.1);
+    border: none;
+}
+
+.card-header {
+
+    background-color: #0d6efd;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    padding: 20px;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.search-btn {
+
+    width: 100%;
+    margin-top: 32px;
+}
+
+.table-section {
+
+    margin-top: 30px;
+}
+
+.export-section {
+
+    margin-top: 25px;
+    text-align: center;
+}
+
+.export-btn {
+
+    width: 180px;
+    margin: 10px;
+}
+
+.table {
+
+    background-color: white;
+}
+
+.table thead {
+
+    background-color: #212529;
+    color: white;
+}
+
+.no-data {
+
+    text-align: center;
+    color: gray;
+    padding: 20px;
+    font-size: 18px;
+}
+
+.form-control,
+.form-select {
+
+    height: 45px;
+}
+
+button {
+
+    border-radius: 8px !important;
+}
+
+table tbody tr:hover {
+
+    background-color: #f2f2f2;
+}
