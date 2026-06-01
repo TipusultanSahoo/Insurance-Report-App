@@ -123,5 +123,11 @@ public class CitizenPlan {
   	public void setDenialReason(String denialReason) {
   		this.denialReason = denialReason;
   	}
+  	
+  	@Override
+  	public String toString() {
+  		// TODO Auto-generated method stub
+  		return planName + "," + citizenName;
+  	}
 
 }

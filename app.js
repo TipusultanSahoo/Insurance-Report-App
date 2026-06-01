@@ -83,20 +83,11 @@ async function searchReports() {
 
     const searchData = {
 
-        planName:
-            document.getElementById("planName").value,
-
-        planStatus:
-            document.getElementById("planStatus").value,
-
-        gender:
-            document.getElementById("gender").value,
-
-        startDate:
-            document.getElementById("startDate").value,
-
-        endDate:
-            document.getElementById("endDate").value
+        planName: document.getElementById("planName").value || null,
+    planStatus: document.getElementById("planStatus").value || null,
+    gender: document.getElementById("gender").value || null,
+    startDate: document.getElementById("startDate").value || null,
+    endDate: document.getElementById("endDate").value || null
     };
 
     try {
@@ -115,7 +106,8 @@ async function searchReports() {
         );
 
         const data = await response.json();
-
+        console.log(data.body);
+        
         renderTable(data);
 
     } catch (error) {
@@ -166,15 +158,15 @@ function renderTable(data) {
 
                 <td>${report.benefitAmount || ''}</td>
 
-                <td>${report.startDate || ''}</td>
+                <td>${report.planStartDate || ''}</td>
 
-                <td>${report.endDate || ''}</td>
+                <td>${report.planEndDate || ''}</td>
 
                 <td>${report.denialReason || ''}</td>
 
             </tr>
         `;
-
+             
         tableBody.innerHTML += row;
     });
 }
