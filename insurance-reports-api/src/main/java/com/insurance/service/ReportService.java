@@ -1,9 +1,11 @@
 package com.insurance.service;
 
-import java.util.List;
 
+import java.util.List;
 import com.insurance.DTO.CitizenPlanDTO;
 import com.insurance.entity.CitizenPlan;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 public interface ReportService {
 
@@ -13,7 +15,7 @@ public interface ReportService {
 	
 	public List<CitizenPlan> search(CitizenPlanDTO c);
 	
-	public boolean exportPDF();
+	public boolean exportPDF(HttpServletResponse response) throws Exception;
 	
-	public boolean exportExcel();
+	public boolean exportExcel(HttpServletResponse response) throws Exception;
 }

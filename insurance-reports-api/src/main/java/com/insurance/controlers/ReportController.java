@@ -14,6 +14,9 @@ import com.insurance.DTO.CitizenPlanDTO;
 import com.insurance.entity.CitizenPlan;
 import com.insurance.service.ReportService;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletResponse;
+
 @RestController
 @CrossOrigin(origins = "*")
 @RequestMapping("/api")
@@ -39,6 +42,29 @@ public class ReportController {
 	public List<CitizenPlan> getSearch(@RequestBody CitizenPlanDTO citizenPlanDTO) {
 		
 		return reportService.search(citizenPlanDTO);
+	}
+	
+	@GetMapping("/export/excel")
+	public void excleExport(HttpServletResponse response) throws Exception {
+		
+		response.setContentType("application/octet-stream");
+		
+		response.setHeader("Content-Disposition", "attachment; filename=Report.xlsx");
+		
+		reportService.exportExcel(response);
+		
+	}
+	
+	
+	@GetMapping("/export/pdf")
+	public void pdfExport(HttpServletResponse response) throws Exception {
+		
+		response.setContentType("application/pdf");
+		
+		response.setHeader("Content-Disposition", "attachment; filename=Report.pdf");
+		
+		reportService.exportPDF(response);
+		
 	}
 
 }
