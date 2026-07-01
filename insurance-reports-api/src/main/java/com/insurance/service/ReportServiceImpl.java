@@ -20,6 +20,9 @@ import com.insurance.InsuranceReportsApiApplication;
 import com.insurance.entity.CitizenPlan;
 import com.insurance.repo.CitizenPlanRepo;
 import com.insurance.repo.PlanMasterRepo;
+import com.insurance.util.EmailUtils;
+import com.insurance.util.ExcelGenerator;
+import com.insurance.util.PdfGenerator;
 import com.lowagie.text.Document;
 import com.lowagie.text.PageSize;
 import com.lowagie.text.Paragraph;
@@ -32,20 +35,18 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class ReportServiceImpl implements ReportService {
-
-    private final InsuranceReportsApiApplication insuranceReportsApiApplication;
 	
 	@Autowired
-	CitizenPlanRepo citizenPlanRepo;
+	private CitizenPlanRepo citizenPlanRepo;
 	@Autowired
-	PlanMasterRepo planMasterRepo;
-	private List<CitizenPlan> all;
-	private List<CitizenPlan> collect;
-
-
-    ReportServiceImpl(InsuranceReportsApiApplication insuranceReportsApiApplication) {
-        this.insuranceReportsApiApplication = insuranceReportsApiApplication;
-    }
+	private PlanMasterRepo planMasterRepo;
+	@Autowired
+	private ExcelGenerator excelGenerator;
+	@Autowired
+	private PdfGenerator pdfGenerator;
+	@Autowired
+    private EmailUtils emailUtils;
+	
 	
 
 	@Override
@@ -96,61 +97,23 @@ public class ReportServiceImpl implements ReportService {
 		
 		//find all the records
 		List<CitizenPlan> plans = citizenPlanRepo.findAll();
+		File file= new File("Plans.pdf");
+		
+		pdfGenerator.pdfGenertator(response, plans,file);
+		
+		//send mail
+		
+		String email="sahoogrx03@gmail.com";
+		String subject="Test mail";
+		String body="<h1> Hello , This is a test PDF mail , body</h1>";
 		
 		
-		//creating a document
-		Document document = new Document(PageSize.A4);
+		emailUtils.sendMail(email, subject, body ,file);
 		
-		PdfWriter.getInstance(document, response.getOutputStream());
-		
-		document.open();
-		
-		//add a paragraph in the document
-	    Paragraph p = new Paragraph("Citizen plane Info Report");
-	        p.setAlignment(Paragraph.ALIGN_CENTER);
-	    document.add(p);
-		
-	    //creating a table
-	    PdfPTable table= new PdfPTable(9);
-	    
-	        //adding some style to the table - it can skip or modify as per visualisation
-	        table.setWidthPercentage(100f);
-            table.setWidths(new float[] {1.5f, 4.0f, 1.5f, 2.7f, 2.0f, 2.5f, 4.0f, 4.0f, 4.0f});
-            table.setSpacingBefore(10);
-            
-            
-	    //adding table header
-	    table.addCell("Id");
-	    table.addCell("Citizen Name");
-	    table.addCell("Gender");
-	    table.addCell("Plan Name");
-	    table.addCell("Status");
-	    table.addCell("Benefit Amount");
-	    table.addCell("Start Date");
-	    table.addCell("End Date");
-	    table.addCell("Denial Reason");
-	    
-	    //adding table data rows
-	    for(CitizenPlan plan : plans) {
-	    	
-	    	table.addCell(plan.getCitizenId()+"");
-	    	table.addCell(plan.getCitizenName());
-	    	table.addCell(plan.getGender());
-	    	table.addCell(plan.getPlanName());
-	    	table.addCell(plan.getPlanStatus());
-	    	table.addCell(plan.getBenefitAmount()+"");
-	    	table.addCell(plan.getPlanStartDate()+"");
-	    	table.addCell(plan.getPlanEndDate()+"");
-	    	table.addCell(plan.getDenialReason());
-	    }
-	    
-	    //table add to the document
-	    document.add(table);
-	    
-	    
-	    document.close();
+		file.delete();
 		
 		return true;
+		
 	}
 	
 	
@@ -160,59 +123,24 @@ public class ReportServiceImpl implements ReportService {
 		// find all the records in the data base 
 		List<CitizenPlan> plans = citizenPlanRepo.findAll();
 		
-		//create a new work book
-		Workbook workbook = new XSSFWorkbook();
+		File file= new File("Plans.xls");
 		
-		//create a new excele sheet
-		Sheet sheet = workbook.createSheet("Insurance Reports");
-        
-		//create a row
-		Row header = sheet.createRow(0);
-        
-		//create cell and add the value
-		header.createCell(0).setCellValue("Citizen Name");
-		header.createCell(1).setCellValue("Gender");
-		header.createCell(2).setCellValue("Plan Name");
-		header.createCell(3).setCellValue("Status");
-		header.createCell(4).setCellValue("Benefit Amount");
-		header.createCell(5).setCellValue("Start Date");
-		header.createCell(6).setCellValue("End Date");
-		header.createCell(7).setCellValue("Denial Reason");
-
-		int index = 1;
-
-		for (CitizenPlan plane : plans) {
-
-			Row row = sheet.createRow(index);
-
-			row.createCell(0).setCellValue(plane.getCitizenName());
-			row.createCell(1).setCellValue(plane.getGender());
-			row.createCell(2).setCellValue(plane.getPlanName());
-			row.createCell(3).setCellValue(plane.getPlanStatus());
-			if(null != plane.getBenefitAmount()) {
-				row.createCell(4).setCellValue(plane.getBenefitAmount());
-			}
-			else {
-				row.createCell(4).setCellValue("N/A");
-			}
-			row.createCell(5).setCellValue(plane.getPlanStartDate() + "");
-			row.createCell(6).setCellValue(plane.getPlanEndDate() + "");
-			row.createCell(7).setCellValue(plane.getDenialReason());
-
-			index++;
-		}
+		excelGenerator.excleGenertator(response, plans , file);
 		
-//		FileOutputStream fos = new  FileOutputStream(new File("plneReports.xls"));
-//		
-//		workbook.write(fos);
-//		workbook.close();
+		//send mail
 		
-		ServletOutputStream outputStream = response.getOutputStream();
+		String emailTo="sahoogrx03@gmail.com";
+		String subject="Test mail";
+		String body="<h1> Hello , This is a test Excel mail , body</h1>";
 		
-		workbook.write(outputStream);
-		workbook.close();
+		
+		emailUtils.sendMail(emailTo, subject, body , file);
+		
+		file.delete();
 		
 		return true;
+		
+		
 	}
 
 	
